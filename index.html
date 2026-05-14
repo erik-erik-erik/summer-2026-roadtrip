@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summer 2026 — A Northern Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root {
+    --bg: #f4ede1;
+    --bg-card: #fbf6ec;
+    --ink: #2d2419;
+    --ink-soft: #5a4a36;
+    --ink-faint: #8a7758;
+    --line: #d6c7a8;
+    --line-soft: #e6dcc4;
+    --accent: #8b3a1d;
+    --accent-soft: #c47a52;
+    --forest: #3d5240;
+    --water: #4a6b7a;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 20% 0%, rgba(196, 122, 82, 0.06) 0%, transparent 50%),
+      radial-gradient(at 80% 100%, rgba(61, 82, 64, 0.05) 0%, transparent 50%);
+    line-height: 1.6;
+    font-size: 16px;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* Subtle paper texture via SVG noise */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 2; }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 400;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 28px;
+    font-variation-settings: "opsz" 144;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 300;
+  }
+  .hero-sub {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--ink-soft);
+    max-width: 640px;
+    line-height: 1.45;
+    margin-bottom: 48px;
+    font-style: italic;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hero-meta-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .hero-meta-value {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  /* SECTION HEADERS */
+  section {
+    padding: 80px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section:last-child { border-bottom: none; }
+
+  .section-num {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--accent);
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 16px;
+    font-variation-settings: "opsz" 100;
+  }
+  .section-intro {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 300;
+    color: var(--ink-soft);
+    max-width: 680px;
+    line-height: 1.55;
+    margin-bottom: 48px;
+  }
+
+  /* MAP */
+  #overview-map {
+    width: 100%;
+    height: 480px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    margin-bottom: 32px;
+    z-index: 1;
+  }
+  .leaflet-container { background: #f4ede1; font-family: var(--sans); }
+
+  /* PILLARS */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .pillar {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 32px;
+    position: relative;
+  }
+  .pillar-icon {
+    width: 36px; height: 36px;
+    margin-bottom: 20px;
+    color: var(--accent);
+  }
+  .pillar h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .pillar p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  /* DESTINATIONS */
+  .destination {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 80px;
+    align-items: start;
+  }
+  .destination:last-child { margin-bottom: 0; }
+  .destination.reverse .dest-photos { order: 2; }
+  .destination.reverse .dest-content { order: 1; }
+
+  .dest-photos {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+    height: 420px;
+  }
+  .dest-photo-main {
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    grid-row: span 2;
+  }
+  .dest-photo-side {
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+
+  .dest-content {
+    padding-top: 16px;
+  }
+  .dest-num {
+    display: inline-block;
+    font-family: var(--serif);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .dest-name {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .dest-region {
+    font-size: 13px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+  }
+  .dest-description {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+  }
+
+  .dest-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 24px;
+  }
+  .dest-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .dest-detail-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .dest-detail-value {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .dest-camp {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(196, 122, 82, 0.08);
+    border-left: 3px solid var(--accent-soft);
+    margin-bottom: 24px;
+    border-radius: 0 4px 4px 0;
+  }
+  .dest-camp-icon { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+  .dest-camp-text { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+  .dest-camp-text strong { color: var(--ink); font-weight: 500; }
+
+  .dest-trails-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+  .dest-trails {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .dest-trail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .dest-trail:hover {
+    border-color: var(--accent-soft);
+    background: rgba(196, 122, 82, 0.05);
+    transform: translateX(2px);
+  }
+  .dest-trail-name { font-family: var(--serif); font-weight: 500; }
+  .dest-trail-meta { font-size: 12px; color: var(--ink-faint); display: flex; gap: 12px; align-items: center; }
+  .dest-trail-dog {
+    background: var(--forest);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.05em;
+  }
+  .dest-trail-arrow { color: var(--ink-faint); }
+
+  /* TRADEOFFS */
+  .tradeoff {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .tradeoff-q {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .tradeoff-context {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .tradeoff-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .tradeoff-option {
+    background: var(--bg);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+  }
+  .tradeoff-option.recommended {
+    border-color: var(--accent);
+    border-width: 1px;
+    box-shadow: 0 0 0 3px rgba(139, 58, 29, 0.08);
+  }
+  .tradeoff-option-tag {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .tradeoff-option-name {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .tradeoff-option-list {
+    list-style: none;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+  .tradeoff-option-list li {
+    padding-left: 18px;
+    position: relative;
+  }
+  .tradeoff-option-list li.pro::before {
+    content: "+";
+    position: absolute;
+    left: 0;
+    color: var(--forest);
+    font-weight: 600;
+  }
+  .tradeoff-option-list li.con::before {
+    content: "−";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* INDEX */
+  .index-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+  }
+  .index-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 12px 16px 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .index-table td {
+    padding: 16px 16px 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: middle;
+  }
+  .index-leg {
+    font-family: var(--serif);
+    font-size: 11px;
+    font-style: italic;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .index-name {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .index-region {
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .index-nights {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .index-drive {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .index-totals {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+    padding: 24px 0;
+    border-top: 2px solid var(--ink);
+  }
+  .index-total-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .index-total-value {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 48px 0 64px;
+    text-align: center;
+  }
+  footer p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-faint);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .container { padding: 0 24px; }
+    .hero { padding: 56px 0 40px; }
+    .hero-meta { gap: 24px; }
+    section { padding: 56px 0; }
+    .pillars { grid-template-columns: 1fr; gap: 16px; }
+    .destination, .destination.reverse {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .destination.reverse .dest-photos { order: 0; }
+    .destination.reverse .dest-content { order: 1; }
+    .dest-photos { height: 280px; }
+    .tradeoff-options { grid-template-columns: 1fr; }
+    .index-totals { grid-template-columns: repeat(2, 1fr); }
+    .index-table th:nth-child(3), .index-table td:nth-child(3) { display: none; }
+  }
+
+  /* Print-friendly */
+  @media print {
+    body { background: white; }
+    body::before { display: none; }
+    section { page-break-inside: avoid; }
+  }
+
+  /* Reveal animation */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .destination, .tradeoff, .pillar {
+    animation: fadeUp 0.7s ease forwards;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">A proposal · Summer 2026</div>
+    <h1>A northern <em>loop</em>,<br>by truck camper.</h1>
+    <p class="hero-sub">Park City to Lopez Island and back, threading the wildest stretches of the Rockies, the Canadian interior, the North Cascades, and the Sawtooths — at a pace that lets us actually sit in the places we go.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Departure</span>
+        <span class="hero-meta-value">July 10</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Home by</span>
+        <span class="hero-meta-value">Sept 15</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Total nights</span>
+        <span class="hero-meta-value">≈ 65</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Crew</span>
+        <span class="hero-meta-value">2 + 1 + 2</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 1. OVERVIEW -->
+<section id="overview">
+  <div class="container">
+    <div class="section-num">§ One</div>
+    <h2 class="section-title">The shape of it.</h2>
+    <p class="section-intro">A counter-clockwise loop: north through Yellowstone and Glacier, into the Canadian Rockies and BC interior, west to Lopez for a long stay, then home through the North Cascades and the Sawtooths.</p>
+
+    <div id="overview-map"></div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21l4-12 4 6 4-9 6 15"/><path d="M3 21h18"/></svg>
+        <h3>Easy boondocking</h3>
+        <p>Most nights are free dispersed sites on national forest, BC Crown land, or BLM — the camper handles a week without services, so we stay in remoter places without juggling reservations.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <h3>Low driving days</h3>
+        <p>Average drive between basecamps is under 3 hours. Only two transit days exceed 5 hours. The longest stretches sit at the start and end, when we're home-territory comfortable.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+        <h3>Real dwell time</h3>
+        <p>Multi-night basecamps with hiking and biking right out the door. Dog-friendly trails throughout — particularly in Canada and on national forest land surrounding the parks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. DESTINATIONS -->
+<section id="destinations">
+  <div class="container">
+    <div class="section-num">§ Two</div>
+    <h2 class="section-title">The stops.</h2>
+    <p class="section-intro">Fourteen basecamps across two months. Each one earns its keep with a real reason to be there — a hot spring, a granite spire, a flow trail, a quiet ridge with the dogs.</p>
+
+    <!-- 1. Teton Valley -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMTs2r_S1IaQIHp62WHOqT11Qr5XXyQiyPiahT2YN-YaYhiv0v_wn-aP3lAlvOyzM8Gn5ye7O7wt78xJPj_v1hF2Np7tqT5FKE1oz-YaP7OMQo3vO4akqrpPOp7krOieXisucVv4LWuVgDx=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOS7WP-pOAE6Eb_GuKIraS4KyKxCXdz_SGSWgAKv3J_-PueKqOP2dR_GvvLSJdIvKn9JOh_64BBIWwuRXchOk0YBIfWXKOlFntIoKFQrbBJ-Uf5zbagMv3yTeBljrC0wjvliTQdED_pZ2OnjcM=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNb4VqeUHW0uAKm3Odxn2QTBAaAvemn40f7D_2Uv5likNWhPAWmqwGPP9PqHAofNThJqs7D2ffGR_W704K9WkaDA4v3EPmsYYZtylT_0ItAox4j2DWXKdMu5mCBKUME8S_ION2stb_ya2fTiQ=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 01 · Jul 10–11</div>
+        <h3 class="dest-name">Teton Valley</h3>
+        <div class="dest-region">Caribou-Targhee NF · Driggs side, ID</div>
+        <p class="dest-description">The quiet backside of the Tetons. Two-stage arrival: a low-elevation soft landing on day one, then up the canyon into the Jedediah Smith Wilderness on day two — where unlike the parks across the pass, dogs are welcome on every trail.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">2 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">4.5 hr from PC</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Night 1 — Mike Harris CG</strong> (~6,200 ft, off Hwy 33 between Victor &amp; Driggs): easy paved approach for a tired baby, Nemo trail leaves from camp for a morning dog walk. <strong>Night 2 — Teton Canyon CG</strong> ($17, 6,500 ft): book site #1 ahead — it's the only one that fits a 24-26 ft rig (others cap at 20 ft). Bear lockers, vault toilets, Jed Smith Wilderness trails from camp. Dispersed exists on Teton Canyon Rd but the road is rough and tight; not ideal for first night with the rig.</div>
+        </div>
+        <div class="dest-trails-label">Trails &amp; rides</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Teton+Canyon+Trail+Wyoming" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Teton Canyon Trail (from CG)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · creekside</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Alaska+Basin+Jedediah+Smith" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Alaska Basin (long day)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · alpine basin</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Table+Mountain+West+Face+Wyoming" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Table Mountain (West Face)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · backside of the Grand</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.trailforks.com/region/horseshoe-canyon-26097/" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Horseshoe Canyon MTB</span>
+            <span class="dest-trail-meta"><span>Bike · flowy XC singletrack</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.grandtarghee.com/summer/biking/" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Grand Targhee Bike Park</span>
+            <span class="dest-trail-meta"><span>Bike · lift-served, 2,000 vert</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2. Tom Miner -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPstHx_sz9BYZALBk4FvtMZZUhOY4hGugA0VB_xma4ClT-QpC4OVvLAkVAOPPa-4hR8trhJDuGROl3cLXP8yXamXjBiQmySmpkuIA5nBdePaE1MwbTNWWArQ-ByHegxjRUDPzySxSsT6DnRbwja1pCRow=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPZ5_JOvNJW1m7bU1w2J4Kq2XRD-2hRfPJo61o5hpOc-bZrEfd52JXGoU3w1CA885Q9rdnDEQlQr0pJEjcJrAGJAS-w8lwO9-8I7XpY7Y3h5DLT-we-8PKKineVhWsmmwjbZdqzGujvapapAzbgYfR15w=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMq8F46_0cY5OSM0m8pPb0SA1eMtUv0SManimDLkOjPsAGg2-eiWTiQAZhJ1oSn6GimDi0ovBXz2jokSm04KeofCzzedt7N519If7fMWWRmhpDk3vrsu0FT0IfAhBgwWtlNpyo6SyRCtqEv4w=s4800-w750-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 02 · Jul 12–14</div>
+        <h3 class="dest-name">Tom Miner Basin</h3>
+        <div class="dest-region">Custer-Gallatin NF · Yellowstone N. gateway, MT</div>
+        <p class="dest-description">A grizzly basin north of Gardiner, basecamp for a south-to-north traverse of Yellowstone. Skip the geyser zoo and drive Hayden → Lamar Valley for wolves at dusk, then sleep in shaded NFS dispersed sites away from crowds.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">3 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3.5 hr (via park)</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Tom Miner Campground</strong> + free dispersed along Tom Miner Rd. Petrified Forest trailhead from camp. Bring binoculars — bears in the meadows below.</div>
+        </div>
+        <div class="dest-trails-label">Trails & loops</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Petrified%20Forest%20Tom%20Miner" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Petrified Forest Loop</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · NFS</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Mount%20Washburn%20Yellowstone" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Mount Washburn (no dogs)</span>
+            <span class="dest-trail-meta"><span>Moderate · panoramic</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Lamar%20Valley%20wildlife" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Lamar Valley wildlife drive</span>
+            <span class="dest-trail-meta"><span>Drive · dawn or dusk</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3. Bozeman -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNheqoTKVMjkOK0HYz09qTPvfoRpwXF5qkrrBgY8mlpTkyfVbSc-k-H2we7uH7_K5xqo7SqaD1K4qRkrA2knJCkdfTM4IIn7MMW_FydZl-KoTiK-nMDjrl5mzqkKVWIezMQuDh21LhZgFFsPA=s4800-w678-h452')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN04H4BdlUKXWSyeN1hZd3Cm3ua1lgH2qhxzsW5nID6Mt-wZSXRVtlmiv4D3cLy6lxtUAYy1sA5ugTBLUJRCmOMJEmSU8V8N-Ok1DqI2IN6eRayJuLYAQPsOQWDbVRNvy6EFMNjoknVXQ1Cqg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPEgvJ8yf0db8XwCYXBv8xiIkthaLbKmVTGsJCUWSC-zhKrmX_cRJ-cnzgY3m1OeEmS6OMqicZdazbC1IN8R7-cbW-LOHfWnfQ21Xsd8BqX8O5-_2m9OeJPnVCKdSOZumArsrFJGdg4QJnsHA=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 03 · Jul 15</div>
+        <h3 class="dest-name">Bozeman</h3>
+        <div class="dest-region">Paradise Valley · Montana</div>
+        <p class="dest-description">A real meal, a real shower, a resupply. One night at Chico Hot Springs or a quiet site up the Yellowstone River. Easy bridge between the Tom Miner ridge and Glacier.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">1 night</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">1.5 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Chico Hot Springs</strong> (paid, family-friendly soak) or <strong>Pine Creek Campground</strong> in Paradise Valley. Either works as a transit night.</div>
+        </div>
+        <div class="dest-trails-label">Activities</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Pine%20Creek%20Falls%20Montana" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Pine Creek Falls</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · waterfall</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4. Missoula -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOVTr6wUSrAq5llE0adTDr5p47ZaxyR6UaUeibc3jPC8vMcmuLJStr0ZEjfH7qFwuafp56Z1OSqElDxfdqt3lCSeH4z_cXtnAPyYwCBUBkfwB7iCd6EXeQm8JlcpWRrmssniAVF4BVA9Culaw=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNeyJKgV_yuhHk4oi3-C_uqrBWvR0z7B0kaclq9aJVgGC4vN5tFVgPH0WKxi3ZB7Ltmde-23zf6vx64f171AIqX25_c_l7Y3BcDtPS_6OONjcCbHJB7bpMWOIej8kKn2tB6dSnwQItaYJCS=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPrgJooSWz53hv71MNhBl30_8670iMrnpPAeREbxbBwT8KBrQrQsDkS4G0t3D9N4c8tPYElv5XBX9hRDsBN6NzC5Hdja-RDXt-67K9-CkJEIegOjk691DmaBDvdCbayguEpfb72WNhX3siCLg=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 04 · Jul 16–17</div>
+        <h3 class="dest-name">Missoula & Lolo NF</h3>
+        <div class="dest-region">Western Montana</div>
+        <p class="dest-description">Marshall Mountain's flow trail is the local gem — fast, smooth, the kind of run that makes you want a second lap. Rattlesnake NRA right in town for dog miles. Optional: drop into the Bitterroot for a deeper night.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">2 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Lolo NF dispersed</strong> on Rock Creek or up the Blackfoot corridor. 30 min from town, free, shaded. River swim with the dogs after a hot ride.</div>
+        </div>
+        <div class="dest-trails-label">Trails & MTB</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Marshall%20Mountain%20Missoula" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Marshall Mountain MTB</span>
+            <span class="dest-trail-meta"><span>Bike · flow trails</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Rattlesnake%20NRA%20Missoula" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Rattlesnake Main Trail</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · gentle grade</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5. Glacier -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOkckcmdgUh8DzWHESv3OzChe-EQfXM_fEf_iXwIhrVnn4N1ULirPLe_13NZmj87HaIxGZ77G1lCHS25ql6LxHUATHJ1j5G8oyDDVpYOvaIdpJ-Q7_KXRtFvbzVArr18kN4X8sBDDIhBV4h=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN5yEoRc0-Nlo-ulY7Sq9ThopZT2nr4Weo6-MglO1v2PSdh9XTqk3ANQGGNP2pa7fO9ViVsn3Flnqo116GE2c-8OtsoI3jmEQjfZX_-oMKlfatf2BYO061dXykVL8_IavzugE8YH87I_wEkEls=s4800-w640-h480')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZO_E0IHRNDGqjpbS3Kj9l5ilDq1Joij-E9fTLQrZQnH8rqxhRGhLwnK1WBEj4o8zqVAPwv4OrUXN0f8mFi6CGF--JoaLUEaY8F0pIe9AHqnv60fs5ZVPqVWBwMALb-k3GhKLRpQxzn6CITKHg=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 05 · Jul 18–20</div>
+        <h3 class="dest-name">Glacier National Park</h3>
+        <div class="dest-region">East side · Many Glacier / Two Medicine, MT</div>
+        <p class="dest-description">The east side of Glacier is the dramatic side — sheer faces, the chain of red-rock cirques. Sun rises over the peaks instead of setting behind them. We base on Lewis & Clark NF dispersed and day-trip into the park, with one alternates-and-dogs day on the adjacent NFS.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">3 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3.5 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Lewis & Clark NF dispersed</strong> outside East Glacier — free, forested, dog-friendly. Verify timed-entry rules for Many Glacier closer to dates; Two Medicine generally easier.</div>
+        </div>
+        <div class="dest-trails-label">Hikes</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Iceberg%20Lake%20Glacier" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Iceberg Lake (no dogs)</span>
+            <span class="dest-trail-meta"><span>Moderate · iconic cirque</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Grinnell%20Glacier%20Trail" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Grinnell Glacier (no dogs)</span>
+            <span class="dest-trail-meta"><span>Hard · classic</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Scenic%20Point%20Two%20Medicine" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Scenic Point</span>
+            <span class="dest-trail-meta"><span>Hard · sweeping views</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6. Waterton -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMrsC5Kus6dM84BES1ggsGGp776U1QFJjvXH2jbMOknrUn8KE-74POvX1G3OgKT7gqayWMHgvTzIbLM4oY2fi5yRib-tIhlLITI-oJVrA_CoOX1BqoeYAoiYoLne5eAjaxUsZB0Y0tSehoLhg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMu7FVFtfRZqaNMKttbMlaQYPHgAEZaWyzRGb-8qlwHteSz7bqcB3oydKluhOZl52Ey3G1NJHisAUBzjj3VRRqCw2anW6hP8ZYnxfPg7x_D1JFlNereswBrpzMZbMNsSQ_daCvs9qJyBMr4Fg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOhf5bdzzYPfDJbBxSGAAOAuQADKEkz8bMp_vXcQ0MHcMu5oqqR92QyaWgYqRK9uT2_6p1qjnCupi074aTDHwEXhV1r2RHljQJ82v5e_rXwuRfwEORPrS0a2jutR5XlUz4EatyM65KHySzWN6o=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 06 · Jul 21</div>
+        <h3 class="dest-name">Waterton Lakes</h3>
+        <div class="dest-region">Alberta · Canada</div>
+        <p class="dest-description">First night across the border. The Chief Mountain crossing puts us straight into the park; Waterton townsite is small and walkable, dogs welcome on Parks Canada trails (a luxury after Glacier). Bear's Hump for sunset.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">1 night</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">1.5 hr + border</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Crandell Mountain Campground</strong> in-park (forest sites, dog-friendly) or backroad Crown land just outside park boundary.</div>
+        </div>
+        <div class="dest-trails-label">Trails</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Bear%27s%20Hump%20Waterton" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Bear's Hump</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Short steep · sunset</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Bertha%20Lake%20Waterton" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Bertha Lake</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · alpine</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 7. Kananaskis -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPi2HTZEXCCu7lAsJN9ZwZ_-l6blTJjdUApwt6Q9scMD8BF1b9S4h0E4cKLdpwizsP8qEmZSxGN6-mkiQ0MJAoOrGkFWhsC6HTlHcl7tsr2a6BsIT_bX8y4nBBKsY3xAaeUT_ssa9e5-14O-A=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOmN6ktZRzZ6vFx4MU_juThll5qhQwCk-g9QnRnY2nZzgYa9nMeCqb-4ChLI5v_ytmCu_EfZo_mrDFBHV5RYdm-8R5R4vMOsAoW1xnjhtjlcX-uOS_sriJXn73sofCsZ2Ja-fM__6oqekpVoQ=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMBrBjCZsA4dCIjzO3zF9GOA416PO4jos1I0ZVneOj4Ydro0UtBXc1QEQfxxctD2hH2Uxq3ewmIpI3oPsqmS7w4ZpshkDC0kxxTq4gjOW-aX3aYbAx_SfTWVyxkUUafipUz-w3eKPeZjFL7lw=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 07 · Jul 22–24</div>
+        <h3 class="dest-name">Kananaskis</h3>
+        <div class="dest-region">Alberta · Canadian Rockies</div>
+        <p class="dest-description">Banff's quieter back door. Same Rockies, same impossibly turquoise lakes, a fraction of the crowds — and provincial park trails that all welcome dogs on leash. Day-trip into Lake Louise at sunrise; sleep in a creek-side dispersed site on Forestry Trunk Rd.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">3 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Forestry Trunk Road (Hwy 940)</strong> — free Crown land dispersed, multiple proven sites, true Rockies views from camp.</div>
+        </div>
+        <div class="dest-trails-label">Trails & day-trips</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Ptarmigan%20Cirque%20Kananaskis" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Ptarmigan Cirque</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · alpine wildflowers</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Chester%20Lake%20Kananaskis" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Chester Lake</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · classic</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Moraine%20Lake%20Banff" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Moraine Lake (day-trip, dawn)</span>
+            <span class="dest-trail-meta"><span>Iconic · shuttle only</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8. Yoho -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOlGspP0Yb1BoK1leCaF0oI3Bpv5J96SlOThznKnZ6hIRp2HtnlBBxptaDSoY_8kj1_m_i1FJvOSCCxY9qD7p35a7i731Jpq5jSRqUT8y5CoY4gGfGD0g5NVjb2J73W9rLcrDS5Ep5W0-TcDA=s4800-w799-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPiqyygYQr72AXT96ru6CvNFaX733LDng1Zbl5ccDo7Yww-N5UQxY_9VickBLDj3J1Tf8CUa20NqTHcKFUuG50VmiBdzRArYnDMDpMYLjYAzjyorC6b11yHHcguP4ql_U07pUrdok397QyIwDcbSa-H=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMuCozvKZPlWicGWrpF5GvkBxupMyWsJw7TfIMHT5f9vuwglVN6Z3KJXzAjM4T9mLXRqkqkCH7CvSVCXsxCdcOLGT_GQh5L-QYXYmFCgtPQT6mrnQq6hCVmRsOaqtgLWHIBJj5Pj9v0vF22qw=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 08 · Jul 25–26</div>
+        <h3 class="dest-name">Yoho National Park</h3>
+        <div class="dest-region">British Columbia · Canada</div>
+        <p class="dest-description">Banff's quieter sibling on the BC side of the divide. Emerald Lake's turquoise is a rumor confirmed; Takakkaw Falls is one of Canada's tallest. The Iceline Trail is a glacier-hugging traverse for the no-dog day; Emerald Lake circuit is ours together.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">2 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">2 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Free Crown land</strong> in the Blaeberry River drainage near Golden, or paid Kicking Horse Campground in-park if convenience matters.</div>
+        </div>
+        <div class="dest-trails-label">Trails</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Iceline%20Trail%20Yoho" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Iceline Trail</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · glacier traverse</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Emerald%20Lake%20Loop%20Yoho" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Emerald Lake Loop</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · iconic</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 9. Bugaboos -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNtniaJfMOX8xJSnTcn5uErYE41pq05T0L7qogxIZMF0IZRQtbni0HUlE8UsnESqtdvlBOpJPOAtLMi-gG9lg8rT9Al2_8_YE6mZjHXbMtEwp5D4Z2drxF8iCVRSJ93AiNkgapi6y1cxCK4ENg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZP_v-GNOkE-qwSdPn6wiTBpzRAAhyN9DJ_AfMWIrWx7Ku15lyL1xDyuwKAXQQIOXSbqPC_rWgsfxzL7YSujChOo6ZVNjSknclGr8tJkxKkeVWIMYxmTCvTIFnBrf8RLe52O5GX7MH0gn8ZhYg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOTQVX6svP2y7QjoizYqtb6ieWF1AdPoR4gsfGGOcl-SFi8pQmjn03vdnxcPbN8xfPBQztCpHnzQXvjYi4VjXOkiXYab65-DUbo33F0RGrdm0ebi79ZxskV9rRip7c87c5J-2GhtR7cL7EXQg=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 09 · Jul 27–29</div>
+        <h3 class="dest-name">The Bugaboos</h3>
+        <div class="dest-region">Bugaboo Provincial Park · BC interior</div>
+        <p class="dest-description">Granite spires straight out of Patagonia, dropped in the middle of British Columbia. Few people, big quiet, world-class climbing happening overhead while we hike. Conrad Kain Hut as the marquee day; Cobalt Lake as the sleeper. Lussier Hot Springs as a soak en route.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">3 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3 hr (last hr rough)</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Bugaboos trailhead lot</strong> doubles as base — primitive, free, and you wake up below the spires. Pack rats are the one real hazard: pre-trip, wrap the engine harness with capsaicin tape (Honda P/N 4019-2317), bring rodent spray, and prop the hood open overnight.</div>
+        </div>
+        <div class="dest-trails-label">Trails</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Conrad%20Kain%20Hut%20Bugaboos" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Conrad Kain Hut</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · classic approach</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Cobalt%20Lake%20Bugaboos" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Cobalt Lake</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · alpine cirque</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Lussier%20Hot%20Springs" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Lussier Hot Springs (en route)</span>
+            <span class="dest-trail-meta"><span>Soak · primitive</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10. Revelstoke -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN9BUXJJy63VKzH7Wi3oW7OAYBKoIuXv02u2jes9tykm9rh0PhYz-4CRI5QpjEN4f7MFDbxGPpV-H4utPlcyC4ubK1sXEpixI5Jfp0wxTD05yKazO-2Srh6LTgwEP5VNOBbEFXWZuddM9NbWXs=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZO4FuT46yo0Sscnyvo3E1mc4Kiat300qb9AEoR3TRKRInho-uPPX_5VsPni3r1hxFF3dc3OHOAw2N8dLzeIUHNIJObg6dCp6pdnAWtDdY6fBfXVyVjhRU7Z7XEEMJI_KuC2qMipU56UVjmIwg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNm6aaheM1REukqwMV7JsG2jWbI_D0gY0FljlP6XgfvhCShaorbEJNT-En4ZvXkbPQlmrmJ8j4vOsr0F0cU9ktuB3RdYIkGtuIi6n5nWN_gUID5dFBCY2tQ7USlCj_lcdbxKlcjL9V39yd17Hv3EUZOxw=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 10 · Jul 30 – Aug 1</div>
+        <h3 class="dest-name">Revelstoke</h3>
+        <div class="dest-region">British Columbia · the Selkirks</div>
+        <p class="dest-description">Lift-served flow MTB at reasonable prices, hot springs nearby, a real town for resupply, Mt Revelstoke's Meadows in the Sky Parkway for an alpine drive without the climb. We've found dog sitters here before — could mean a real bike-park day for both of us.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">3 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3.5 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Boulder Mountain Rd</strong> or <strong>Frisby Ridge area</strong> — free dispersed BC Recreation sites, 15 min from town. MTB park at Revelstoke Mountain Resort.</div>
+        </div>
+        <div class="dest-trails-label">Activities</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Frisby%20Ridge%20Revelstoke" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Frisby Ridge</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Bike or hike · ridge</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Eva%20Lake%20Revelstoke" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Eva Lake (Mt Revelstoke)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · alpine</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Halcyon%20Hot%20Springs" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Halcyon Hot Springs</span>
+            <span class="dest-trail-meta"><span>Soak · paid resort</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 11. Manning -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOYpDRTsUI_sXQUmKLPaeWOAFvok87HN8XP7MulAxpQxsIakjmmJ88-9TdOX08ARRfyP0q3H1pEsD5oLUBsmuelo6iWSyjexCrIaFM8oOcKo3hC08293XfTMbfgm2EHFboQW63izyyk9Q116SbkZoCP=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMZEio1v4lsTCTZGDcQu29-qma_-402WKG5tuWQbji-kPMKZD3ncEGgjSgftKnsnG18QXymC2EmAn8vafRrnVnmuQXin9jyltfTOtgPhTn_ZlM_ly_1Qmf7QtEgfZJnTttK5PkRb7SwUr5KwrY=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOpQsS6a89-1EuS_6UxZzVQs8fuyMl9HWUB1qJ3wIsBMsg01QJIK5Q6T3vS1irPqFp5z_XWAysM1ySNWR9ChSsIyUhtfxS-H2-5kR3MFD-BwfzdHdbt_1lHnFyeUZ66DT7Wkh51IBJ1JYp-z14=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 11 · Aug 2</div>
+        <h3 class="dest-name">Manning Park</h3>
+        <div class="dest-region">E.C. Manning Provincial Park · BC</div>
+        <p class="dest-description">A natural break on the long Revelstoke–Squamish stretch. Wildflower meadows, alpine lakes, dog-friendly Provincial Park trails — the kind of stop where you arrive late, walk a short loop with the dogs, and sleep with no schedule.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">1 night</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">4 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Lightning Lakes Campground</strong> ($) — large shaded sites in old-growth, hot showers, lake at the door. Or BC Rec dispersed off Hope-Princeton Hwy if the park's full.</div>
+        </div>
+        <div class="dest-trails-label">Trails</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Paintbrush+Trail+Manning+Park" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Paintbrush Trail (subalpine meadows)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · wildflowers</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Lightning+Lakes+Manning+Park" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Lightning Lakes Loop</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · lakeside</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 12. Squamish -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOkM0aPE-8PhkkJd8ep8CzSU4xPZtNO6YDjdG2k_RpP2dcZ1Ef_4OLvEkFBUQVJ16TRJLBrC09Rqng6JKcoTl2nfEaJFVBmXRcQN4vRFKx8P3Nu4GCd1lJMsVNYcGqWRhTbMDMaUYDSS2f0B3g=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMVWHF6n4LC_0c7WlukICnbKRxREFlWFwlkbnuvr65kf_BuYxzabtDtd7VhEGnugPkX0mjZK2jnKz1FrE1_4tmzb7FPD-tjMP1pVTD30t0_cAtQm_kLrlw5ENjwrmAblqiqlP_qoiimXxaD=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMTM-c9ySgjuHUD8vtlHGCcGyYFV8vwBgdrHWZPweswFH6DUPpgPjpGuzWtS-u_9HcE4OV3nxFJSE7WOEmBOAOhSJx6Qh2g9MxnSX9hU4-gthAJMrsiYxid9C1KFkUkKPGNGYGEKynOmEg-ag=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 12 · Aug 3–4</div>
+        <h3 class="dest-name">Squamish</h3>
+        <div class="dest-region">Sea-to-Sky · British Columbia</div>
+        <p class="dest-description">Granite, rainforest, ocean. Half Nelson and the Bonk-area trails are the world-class flow on the way down to Lopez. Stawamus Chief towers above town. Last Canadian stop before the ferry — a Pacific exhale before two weeks on Lopez.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">2 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3 hr from Manning</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Alice Lake Provincial Park</strong> (paid, family-friendly) or BC Rec dispersed in the Mamquam corridor. Squamish core 15 min away.</div>
+        </div>
+        <div class="dest-trails-label">Trails & MTB</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Half%20Nelson%20Squamish" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Half Nelson</span>
+            <span class="dest-trail-meta"><span>Bike · world-class flow</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Stawamus%20Chief" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Stawamus Chief (1st peak)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · granite slabs</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Shannon%20Falls%20BC" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Shannon Falls</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · waterfall</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 12. Lopez -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNdAmerij08jjT47Lk_HEZ2vBSgSe7qS34qo9g5Wa3nd26oxGvLFwRRU_H9Uvr-h5N4pNNmnN8ghhL4E4t3AumPCSmhCOlYrBEZvoWbEnfvf4DQ4y7YflWIxjznLpijTPXGm0ivFXdqM4PQxgs=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMK9ECKqxLJf6qu9zTZoarAwdKZti5juLoM0CdJ8C9K8RC6u-CB4n1srdSPYK1B81iSBGeSqwx30J_2K721E9t3k70lPvpcvG6A9eS-B1QCAqlg--FbvdpmFA4LEhBLcz0rUJubm9UlJ1_dWA=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZM2XCfH1gbFf7jYmUykmnpWx24j739nBOMznHsIf90OzekhYMSYBiXTR24jrZKX9jFjEuVviJDWCSeQ9sV6bCY2nuJfLtu45jAMQJN8PxBsgHBEhqiyFYQpogVSpJJI8VhAB3h0U7aqRMChRg=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 13 · Aug 5–24</div>
+        <h3 class="dest-name">Lopez Island</h3>
+        <div class="dest-region">San Juan Islands · Washington</div>
+        <p class="dest-description">The reason for the loop. Two to three weeks. Iceberg Point, Shark Reef, the slow ferry rhythm. Time to actually unpack, swim, ride the island, watch the baby learn to crawl on grass instead of inside a moving truck.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">~21 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">3.5 hr + ferry</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 13. North Cascades -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPpo_YZQl30mlUa-UrJ3WG49LxNkvkGX-s5_Jl0_OUkb5TlB4lUjyl3liFE1rRE0HJeAQAbHJZ4paOMrmVjHt7TVDAjXiVl_uDC52oX5dhE4BrxyR7NzbIYe8o4JFo5A2jw9QFYipVhoxDShg=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZP780GvLqagz9UHl4jTiE_OLSIDiy_iWH8BEUUFVY3Xg22sVTJjkiVg_1pm5M_emt9F8tIy0LYNy1TC6O34lOnsFLZzoCeAdW2xsan0I1OSGYH5AGp8CZblr6kPwSJTMCE3qP-IZ0UOBIoB=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNQshjorCbD7AwBrBsZTibygr2Rc-So_mkjQzc6pm9DU0XLEQJ0STHTlepVj8Wrtbe029oeyq5mQCiocMJ7Ek8rOZyYCsWsjFYPLCOILDfIIW61bYEuys0JKDPIvGaLQmyxjKYwOtx98DLNb-f7kekDOw=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 14 · Aug 25–31</div>
+        <h3 class="dest-name">North Cascades & Methow</h3>
+        <div class="dest-region">Mazama base · Washington east side</div>
+        <p class="dest-description">One basecamp at Mazama, two flavors of country: NCNP's drama up Hwy 20 (Maple Pass, Blue Lake, Cutthroat) and the dry, golden Methow Valley with its Sun Mountain flow trails. East side dodges most of the late-summer smoke. Late August is peak in both.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">6–7 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">4 hr + ferry</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Okanogan-Wenatchee NF dispersed</strong> on Lost River Rd or Goat Creek. NCNP day-trips up Hwy 20; Methow MTB and dog hiking from camp.</div>
+        </div>
+        <div class="dest-trails-label">Trails & MTB</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Maple%20Pass%20Loop%20Washington" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Maple Pass Loop</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · alpine larches</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Cutthroat%20Pass%20Washington" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Cutthroat Pass</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · ridge views</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Sun%20Mountain%20Methow%20MTB" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Sun Mountain MTB network</span>
+            <span class="dest-trail-meta"><span>Bike · flow & XC</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 15. Wallowas -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNY0Uxg8ju78ZqnSV7HZDS-iIiWL48AaobdgJCZ3ZCQq34esvb1B5hIUloD7HXxLssWA_FcjiLVSBSWWEseQyXfA3FYifQYjWf55sNqSgpBh2-FvSScJzRZwlm-0SCAKODCtXShVwsPZX8fMQ=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPVsZnFGzziqBH-eWdN8r1yzOTTQEq6CUL_YBI5F7aJyHktMY4SqJ-o_IQrvfY8VNn9MtHKCwxi5dGEfJlGQdQHPhUvYxDqw9I7qyStgJG27IZJM0_QNgPMxeR2mYk7tgIGSL-JVAhDBgbPS8A=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMJeHEfhkiEXT_K4WD_KHRG8mNJpvMJyh0SuAjtQnBk2y3xsPYMuhY3TdIW_NOPrFF_8clgtCZEGdvZ4hbR-HnlubD380csdwsYBfS5vtOfmjpFltytdviyjCtcOuUB6gCS8d6HLoU9jMnGEB0=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 15 · Sep 1–2</div>
+        <h3 class="dest-name">Wallowas</h3>
+        <div class="dest-region">Wallowa-Whitman NF · NE Oregon</div>
+        <p class="dest-description">Oregon's "Little Switzerland" — granite peaks, alpine lakes, far fewer crowds than anything comparable. The natural break on the long Methow–Stanley stretch. Joseph is a real little western town; Wallowa Lake sits at the base of the Eagle Cap Wilderness like something out of a postcard.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">2 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">5.5 hr</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Wallowa-Whitman NF dispersed</strong> up the Lostine River corridor — free, shaded, creek-side, dog-friendly. Or Wallowa Lake State Park ($) for showers and lakefront convenience.</div>
+        </div>
+        <div class="dest-trails-label">Trails</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Chief+Joseph+Mountain+Trail+Oregon" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Chief Joseph Mountain Trail</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · alpine views</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Ice+Lake+Eagle+Cap+Wilderness" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Ice Lake (long day)</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · classic</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Wallowa+Lake+West+Side+Trail" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Wallowa Lake West Side Trail</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · lakeside</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 16. Sawtooths -->
+    <article class="destination reverse">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZO_Ebhx1Ka7fbvPmYb-jzRzbmv0LnShQrJDdYpRWRfZ847UO6uYvDvclfgPTjNNdhj1SKdPMxY5j7do2iUcYQhunhL49RXb3rW17yvJYmQqTPUvcCHadJpWj2N-z7pvHxksT5XGHd0VLzTmal8=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPKqrPswqWftLNHkLUmBM_IdaDRAUXQ_yXWMzsWAr6mgPDWCyiJAlCDMCpfZJD9hH1kgFRXFuXyEQ0747Suf8ODJi2jT29G1-CuKtj4VvFjnouEr7EGi9aBc2gwrXQ3eCoQKVHPjei1XkKwGEXCGv2vJA=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMGk-1AgEAlW1NGxg-dTRES79SNqPJeP0p2QKLAajuEwcZUfMw2e4LRKAvaPrBwJiFq1wObZQ_pwWUrYCB75o-nNqSE6T3SpQBmA7NQxOUlA37kuGPR0sI20sa5lhl5F_h-MPaoZSEMXAKodZc=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 16 · Sep 3–7</div>
+        <h3 class="dest-name">Sawtooths · Stanley</h3>
+        <div class="dest-region">Sawtooth NRA · Idaho</div>
+        <p class="dest-description">September in Stanley is genuinely the sweet spot — cool nights, warm days, larches starting to turn, mosquitoes gone. Redfish Lake as the picture-postcard, Sawtooth Lake as the harder day, Iron Creek as the dog-friendly classic. Stanley itself is a dust-and-pickup-truck basecamp town.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">5 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">5 hr from Wallowas</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Sawtooth NRA dispersed</strong> on FS roads outside the wilderness boundary. Iron Creek, Stanley Lake, Pettit Lake all have proven free sites with trail access from camp.</div>
+        </div>
+        <div class="dest-trails-label">Trails</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Sawtooth%20Lake%20Idaho" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Sawtooth Lake</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Hard · classic</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Iron%20Creek%20Sawtooth" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Iron Creek to Alpine Lake</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · gentle</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+          <a href="https://www.google.com/search?q=alltrails+Bench%20Lakes%20Sawtooth" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Bench Lakes</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Moderate · lake chain</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 15. Bonneville -->
+    <article class="destination">
+      <div class="dest-photos">
+        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZP9Kws3aRmo68d3MFRNzFIPSZDUCLFNcWyPRZW8XlCqU9gNd5ebxRtfjblfzgtrA3XHG8cSCBGgMJttdxB-E-pQ7COqJiocYOLZ4fdrCYQH6P7RyCp264JlXrEaVdQ6aNf-opblI6B9sDVh0A=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNRfvvHwqcrH1F3pURhhPSIgCMQGuwiyu8B7FrxlJ7Po_OYq17t44XswaBaE5-acBLUsz1o3rUh52ocxEugXNty5w3C4yo260QbPnLGOoWIZKPMoHtwr64np-89UsXCutlS5mboIn7cbsk-bmiBT6Y7=s4800-w800-h600')"></div>
+        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOVbGHPJaLN-85QK-1BuEltNT9O7FKHO6U1oxTg-ubLRNOgVe6pAE2MZVtH3rKM-Fegq-MlVwPXa_kTSG5pG76Df4c4hMYz-jTj_idWgwITNtucVJ7VVdmSevl0qR9KDlp5ZjaxVKiJ4sprRIGVz4sSww=s4800-w800-h600')"></div>
+      </div>
+      <div class="dest-content">
+        <div class="dest-num">Stop 17 · Sep 8–9</div>
+        <h3 class="dest-name">Bonneville Hot Springs</h3>
+        <div class="dest-region">Boise NF · Lowman, Idaho</div>
+        <p class="dest-description">A drive-up, family-friendly Idaho hot springs. Park at the campground, walk a quarter-mile flat trail to river soaks. Easier-on-the-baby alternative to Gold Bug. Last real soak before home.</p>
+        <div class="dest-detail-grid">
+          <div class="dest-detail">
+            <span class="dest-detail-label">Stay</span>
+            <span class="dest-detail-value">2 nights</span>
+          </div>
+          <div class="dest-detail">
+            <span class="dest-detail-label">Drive in</span>
+            <span class="dest-detail-value">2 hr (Hwy 21)</span>
+          </div>
+        </div>
+        <div class="dest-camp">
+          <svg class="dest-camp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21l7-14 7 14M9 21V13M15 21V13"/></svg>
+          <div class="dest-camp-text"><strong>Bonneville Campground</strong> ($) — short walk to springs, river-side, well-maintained. Or free dispersed nearby on the South Fork Payette.</div>
+        </div>
+        <div class="dest-trails-label">Activities</div>
+        <div class="dest-trails">
+          <a href="https://www.google.com/search?q=alltrails+Bonneville%20Hot%20Springs%20Idaho" target="_blank" rel="noopener" class="dest-trail">
+            <span class="dest-trail-name">Bonneville Hot Springs trail</span>
+            <span class="dest-trail-meta"><span class="dest-trail-dog">Dogs OK</span><span>Easy · soak</span><span class="dest-trail-arrow">↗</span></span>
+          </a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- 3. TRADEOFFS -->
+<section id="tradeoffs">
+  <div class="container">
+    <div class="section-num">§ Three</div>
+    <h2 class="section-title">Open questions.</h2>
+    <p class="section-intro">Two real decisions shape this trip more than the others. Here's how they break down — interested in your read.</p>
+
+    <div class="tradeoff">
+      <h3 class="tradeoff-q">Canadian Rockies: BC interior, or the Icefields Parkway?</h3>
+      <p class="tradeoff-context">Both are 14-ish days, both end at Squamish. The fork is whether we chase the iconic glacier-and-lakes drive (Banff → Lake Louise → Icefields → Jasper) or take the quieter granite-and-hot-springs route (Kananaskis → Yoho → Bugaboos → Revelstoke). Boondocking matters here: Option A has multiple 3-night basecamps with dispersed sites, Option B is structurally a windshield tour with paid campgrounds.</p>
+      <div class="tradeoff-options">
+        <div class="tradeoff-option recommended">
+          <span class="tradeoff-option-tag">Working plan</span>
+          <div class="tradeoff-option-name">Option A · BC interior</div>
+          <ul class="tradeoff-option-list">
+            <li class="pro">Multi-night basecamps, easy dwell time</li>
+            <li class="pro">Granite spires, hot springs, Revelstoke MTB</li>
+            <li class="pro">Quieter, dog-friendly throughout</li>
+            <li class="con">Skips Icefields Parkway & Lake Louise</li>
+            <li class="con">Skips Jasper & Mt Robson</li>
+          </ul>
+        </div>
+        <div class="tradeoff-option">
+          <div class="tradeoff-option-name">Option B · Icefields & Jasper</div>
+          <ul class="tradeoff-option-list">
+            <li class="pro">One of the world's great drives</li>
+            <li class="pro">Lake Louise, Peyto, Bow, Berg</li>
+            <li class="con">Crowded, mostly paid campgrounds</li>
+            <li class="con">More transit, less dwell time</li>
+            <li class="con">Skips Bugaboos & Lussier</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tradeoff">
+      <h3 class="tradeoff-q">Lopez: two weeks or three?</h3>
+      <p class="tradeoff-context">The plan books ~21 nights on Lopez, arriving Aug 4 and departing Aug 24. Buffer on the return is now ~3 days (Wallowas is in, breaking up the long Methow→Stanley stretch). The question is whether to hold that buffer for weather/smoke flexibility, or compress Lopez to two weeks and extend dwell time at one of the basecamps you fall in love with along the way.</p>
+      <div class="tradeoff-options">
+        <div class="tradeoff-option recommended">
+          <span class="tradeoff-option-tag">Working plan</span>
+          <div class="tradeoff-option-name">~3 weeks Lopez + buffer</div>
+          <ul class="tradeoff-option-list">
+            <li class="pro">Real Lopez time — actually unpack</li>
+            <li class="pro">3 days slack for weather/smoke</li>
+            <li class="pro">Baby gets a long break from the road</li>
+            <li class="con">Less dwell-time flex on the road</li>
+          </ul>
+        </div>
+        <div class="tradeoff-option">
+          <div class="tradeoff-option-name">~2 weeks Lopez + roaming</div>
+          <ul class="tradeoff-option-list">
+            <li class="pro">Extra week to extend a basecamp</li>
+            <li class="pro">More flex if Bugaboos or Sawtooths sing</li>
+            <li class="con">Lopez itself stays a "vacation" rather than a stay</li>
+            <li class="con">Less reset for the baby</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tradeoff">
+      <h3 class="tradeoff-q">Yellowstone: full pass-through, or skip?</h3>
+      <p class="tradeoff-context">The plan has us entering at the south, traversing through Hayden and Lamar Valleys, exiting at Gardiner — basecamp in Tom Miner Basin. We skip the Old Faithful zoo entirely. The alternative is to skip Yellowstone too, save a day, and put it elsewhere (Glacier? Canada?). Yellowstone is 4 hrs from Park City — easy to revisit. But Lamar at dusk with binoculars is a real experience.</p>
+      <div class="tradeoff-options">
+        <div class="tradeoff-option recommended">
+          <span class="tradeoff-option-tag">Working plan</span>
+          <div class="tradeoff-option-name">Traverse with Tom Miner base</div>
+          <ul class="tradeoff-option-list">
+            <li class="pro">Lamar Valley wildlife at dusk</li>
+            <li class="pro">Tom Miner is genuinely wild basecamp</li>
+            <li class="pro">No real detour cost</li>
+            <li class="con">Park traffic is real even on traverse</li>
+          </ul>
+        </div>
+        <div class="tradeoff-option">
+          <div class="tradeoff-option-name">Skip — go straight to Glacier</div>
+          <ul class="tradeoff-option-list">
+            <li class="pro">Save 1-2 days for Canada</li>
+            <li class="pro">Avoid park crowds entirely</li>
+            <li class="con">Misses Lamar, which the trip won't replicate</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 4. INDEX -->
+<section id="index">
+  <div class="container">
+    <div class="section-num">§ Four</div>
+    <h2 class="section-title">The full ledger.</h2>
+    <p class="section-intro">Every stop, every night, every drive — start to finish.</p>
+
+    <table class="index-table">
+      <thead>
+        <tr>
+          <th>Leg</th>
+          <th>Stop</th>
+          <th>Region</th>
+          <th>Nights</th>
+          <th>To next</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="index-leg">Outbound</span></td>
+          <td><span class="index-name">Teton Valley</span><br><span class="index-region">Mike Harris + Teton Canyon</span></td>
+          <td><span class="index-region">Caribou-Targhee NF</span></td>
+          <td><span class="index-nights">2</span></td>
+          <td><span class="index-drive">3.5 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Tom Miner Basin</span><br><span class="index-region">via Yellowstone traverse</span></td>
+          <td><span class="index-region">Custer-Gallatin NF, MT</span></td>
+          <td><span class="index-nights">3</span></td>
+          <td><span class="index-drive">1.5 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Bozeman / Paradise Valley</span><br><span class="index-region">resupply night</span></td>
+          <td><span class="index-region">Montana</span></td>
+          <td><span class="index-nights">1</span></td>
+          <td><span class="index-drive">3 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Missoula / Lolo NF</span><br><span class="index-region">Marshall Mtn MTB</span></td>
+          <td><span class="index-region">Montana</span></td>
+          <td><span class="index-nights">2</span></td>
+          <td><span class="index-drive">3.5 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Glacier NP</span><br><span class="index-region">East side · Many Glacier</span></td>
+          <td><span class="index-region">Lewis & Clark NF, MT</span></td>
+          <td><span class="index-nights">3</span></td>
+          <td><span class="index-drive">1.5 hr + border</span></td>
+        </tr>
+        <tr>
+          <td><span class="index-leg">Canada</span></td>
+          <td><span class="index-name">Waterton Lakes</span><br><span class="index-region">first Canadian night</span></td>
+          <td><span class="index-region">Alberta</span></td>
+          <td><span class="index-nights">1</span></td>
+          <td><span class="index-drive">3 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Kananaskis</span><br><span class="index-region">Banff back door</span></td>
+          <td><span class="index-region">Alberta</span></td>
+          <td><span class="index-nights">3</span></td>
+          <td><span class="index-drive">2 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Yoho NP</span><br><span class="index-region">Emerald Lake, Iceline</span></td>
+          <td><span class="index-region">BC</span></td>
+          <td><span class="index-nights">2</span></td>
+          <td><span class="index-drive">3 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Bugaboos</span><br><span class="index-region">granite spires + Lussier en route</span></td>
+          <td><span class="index-region">BC interior</span></td>
+          <td><span class="index-nights">3</span></td>
+          <td><span class="index-drive">3.5 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Revelstoke</span><br><span class="index-region">flow MTB + hot springs</span></td>
+          <td><span class="index-region">BC</span></td>
+          <td><span class="index-nights">3</span></td>
+          <td><span class="index-drive">4 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Manning Park</span><br><span class="index-region">drive break · meadows</span></td>
+          <td><span class="index-region">BC</span></td>
+          <td><span class="index-nights">1</span></td>
+          <td><span class="index-drive">3 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Squamish</span><br><span class="index-region">Sea-to-Sky</span></td>
+          <td><span class="index-region">BC</span></td>
+          <td><span class="index-nights">2</span></td>
+          <td><span class="index-drive">3.5 hr + ferry</span></td>
+        </tr>
+        <tr>
+          <td><span class="index-leg">Lopez</span></td>
+          <td><span class="index-name">Lopez Island</span><br><span class="index-region">the long stay</span></td>
+          <td><span class="index-region">San Juans, WA</span></td>
+          <td><span class="index-nights">~21</span></td>
+          <td><span class="index-drive">4 hr + ferry</span></td>
+        </tr>
+        <tr>
+          <td><span class="index-leg">Return</span></td>
+          <td><span class="index-name">North Cascades + Methow</span><br><span class="index-region">single basecamp · Mazama</span></td>
+          <td><span class="index-region">Okanogan-Wenatchee NF</span></td>
+          <td><span class="index-nights">6–7</span></td>
+          <td><span class="index-drive">5.5 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Wallowas</span><br><span class="index-region">"Little Switzerland"</span></td>
+          <td><span class="index-region">Wallowa-Whitman NF, OR</span></td>
+          <td><span class="index-nights">2</span></td>
+          <td><span class="index-drive">5 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Sawtooths · Stanley</span><br><span class="index-region">peak season</span></td>
+          <td><span class="index-region">Sawtooth NRA, ID</span></td>
+          <td><span class="index-nights">5</span></td>
+          <td><span class="index-drive">2 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Bonneville Hot Springs</span><br><span class="index-region">last soak</span></td>
+          <td><span class="index-region">Boise NF, ID</span></td>
+          <td><span class="index-nights">2</span></td>
+          <td><span class="index-drive">6 hr</span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="index-name">Park City · home</span><br><span class="index-region">~Sep 10</span></td>
+          <td><span class="index-region">Utah</span></td>
+          <td><span class="index-nights">—</span></td>
+          <td><span class="index-drive">—</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="index-totals">
+      <div>
+        <div class="index-total-label">Total nights</div>
+        <div class="index-total-value">~65</div>
+      </div>
+      <div>
+        <div class="index-total-label">Stops</div>
+        <div class="index-total-value">17</div>
+      </div>
+      <div>
+        <div class="index-total-label">Total drive</div>
+        <div class="index-total-value">~60 hr</div>
+      </div>
+      <div>
+        <div class="index-total-label">Buffer days</div>
+        <div class="index-total-value">~3</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>A working draft. The buffer is the point — extend wherever it's working, cut wherever it isn't.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  // Initialize the map
+  var map = L.map('overview-map', {
+    center: [49.5, -117.0],
+    zoom: 5,
+    scrollWheelZoom: false
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18
+  }).addTo(map);
+
+  var stops = [
+    { name: 'Park City (start/end)', lat: 40.6461, lng: -111.4980, nights: '—', stage: 'home' },
+    { name: 'Teton Valley', lat: 43.7563, lng: -110.9188, nights: 2, stage: 'out' },
+    { name: 'Tom Miner Basin', lat: 45.1847, lng: -110.9538, nights: 3, stage: 'out' },
+    { name: 'Bozeman', lat: 45.6793, lng: -111.0373, nights: 1, stage: 'out' },
+    { name: 'Missoula', lat: 46.8721, lng: -113.9940, nights: 2, stage: 'out' },
+    { name: 'Glacier NP', lat: 48.7561, lng: -113.7797, nights: 3, stage: 'out' },
+    { name: 'Waterton', lat: 49.0833, lng: -113.9167, nights: 1, stage: 'canada' },
+    { name: 'Kananaskis', lat: 51.0763, lng: -115.1288, nights: 3, stage: 'canada' },
+    { name: 'Yoho NP', lat: 51.4146, lng: -116.5324, nights: 2, stage: 'canada' },
+    { name: 'Bugaboos', lat: 50.8190, lng: -116.8200, nights: 3, stage: 'canada' },
+    { name: 'Revelstoke', lat: 50.9981, lng: -118.1957, nights: 3, stage: 'canada' },
+    { name: 'Manning Park', lat: 49.1150, lng: -120.8558, nights: 1, stage: 'canada' },
+    { name: 'Squamish', lat: 49.7016, lng: -123.1558, nights: 2, stage: 'canada' },
+    { name: 'Lopez Island', lat: 48.4869, lng: -122.8955, nights: 21, stage: 'lopez' },
+    { name: 'Mazama / N. Cascades', lat: 48.5924, lng: -120.4048, nights: 7, stage: 'return' },
+    { name: 'Wallowas', lat: 45.2828, lng: -117.2139, nights: 2, stage: 'return' },
+    { name: 'Stanley · Sawtooths', lat: 44.2111, lng: -114.9418, nights: 5, stage: 'return' },
+    { name: 'Bonneville Hot Springs', lat: 44.1517, lng: -115.3116, nights: 2, stage: 'return' }
+  ];
+
+  var stageColors = {
+    home: '#2d2419',
+    out: '#8b3a1d',
+    canada: '#3d5240',
+    lopez: '#4a6b7a',
+    return: '#c47a52'
+  };
+
+  // Draw the route line
+  var routeCoords = stops.map(function(s) { return [s.lat, s.lng]; });
+  // Close the loop back home
+  routeCoords.push([stops[0].lat, stops[0].lng]);
+
+  L.polyline(routeCoords, {
+    color: '#8b3a1d',
+    weight: 2,
+    opacity: 0.5,
+    dashArray: '4, 6'
+  }).addTo(map);
+
+  // Add markers
+  stops.forEach(function(s, i) {
+    var label = s.stage === 'home' ? '◆' : (i);
+    var marker = L.circleMarker([s.lat, s.lng], {
+      radius: s.stage === 'lopez' ? 10 : 7,
+      fillColor: stageColors[s.stage],
+      color: '#fbf6ec',
+      weight: 2,
+      fillOpacity: 1
+    }).addTo(map);
+
+    marker.bindPopup(
+      '<div style="font-family: Fraunces, Georgia, serif;"><strong style="font-size: 15px;">' + s.name + '</strong>' +
+      '<br><span style="font-size: 12px; color: #5a4a36;">' + (s.nights === '—' ? 'home' : s.nights + ' night' + (s.nights === 1 ? '' : 's')) + '</span></div>'
+    );
+  });
+
+  // Fit bounds with padding
+  map.fitBounds(L.latLngBounds(stops.map(function(s){return [s.lat, s.lng]})), { padding: [30, 30] });
+</script>
+
+</body>
+</html>
