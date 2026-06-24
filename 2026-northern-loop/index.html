@@ -558,6 +558,22 @@
   .destination, .tradeoff, .pillar {
     animation: fadeUp 0.7s ease forwards;
   }
+
+  /* PHOTO CREDITS */
+  .colophon { padding: 56px 0; border-bottom: none; }
+  .photo-credits summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; }
+  .photo-credits summary::-webkit-details-marker { display: none; }
+  .credits-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--line); padding-bottom: 3px; transition: color .2s; }
+  .photo-credits summary:hover .credits-eyebrow, .photo-credits[open] .credits-eyebrow { color: var(--accent); border-color: var(--accent-soft); }
+  .credits-note { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--ink-faint); margin: 18px 0 28px; max-width: 560px; }
+  .credits-note a { color: var(--ink-soft); }
+  .credits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 32px; }
+  .credit-stop h4 { font-family: var(--serif); font-size: 15px; font-weight: 500; color: var(--ink); margin: 0 0 8px; }
+  .credit-stop ul { list-style: none; margin: 0; padding: 0; }
+  .credit-stop li { font-family: var(--sans); font-size: 11px; line-height: 1.5; color: var(--ink-faint); margin-bottom: 5px; }
+  .credit-stop li a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line-soft); }
+  .credit-stop li a:hover { color: var(--accent); border-color: var(--accent-soft); }
+  @media (max-width: 768px) { .credits-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -628,9 +644,9 @@
     <!-- 01. Boise / Arrowrock -->
     <article class="destination">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZM59sxRaWDLC3PKoaPE-7-437mEDsS2K5HqD1EMx7NvImEbsBYPz6-VVRb0zfpAH5ec_Rilc5x-EJFM157XHmAavdd1gGrqeYP3PxbQyCvjVlOc2Gbn59EhT5ksuXfkIoJr9V7OG9um8QLmrQ=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN-wZwAxqTe9Ur7HgcVFhSa_UBzgRb64tSITVki-kXW2PDcJIveUqQOhclmDOhDecssFGw1Ele2ITABEWSZWvKgal9_-uaNLubaLyVb0NESu8L_W6Ska58ud5sSY_v6OW_Jtr0ZTikxI7FR=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNl4ZtVuk7SIK5VJ3Td5f_lN54p8h4S92aPz7d8456AjXqovKUR6bpmIpxOKW6sSgYboApUf0-k2w3RdaWOR6AaQYYpCvQelr53PMcq32wG87mUdL-9a-_lYIvEZbx2NSHyUMJmZii7Fp9b5Q=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/01-boise-arrowrock-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/01-boise-arrowrock-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/01-boise-arrowrock-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 01 · Jul 31</div>
@@ -664,9 +680,9 @@
     <!-- 02. Yakima River Canyon -->
     <article class="destination reverse">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPg4Tyea9-yXolSuf-ac9mDbVeW9tieFC322Dxi6EILuvAY7UCfLxx5cfz2bWvhZGHJMOuBx9tp_kRo7BXlBBlmoCvLU8XKQAEdTgMEHbxi-XYXfrkMlF9D-ETrNKj35Bl12TQiHMXzN-uE0g=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMmk6T44-tH85C9ro2vG7Wl0aGIoNoDgB5kdMIGaLb8cx9fe5dm9Tgti2xDF8F95k__NHjubZgV-IxSXgiV5Q5GxMXBKXLSTTZkJiCZi2WZ73SkwvdrgfcXblzFeYgTyeS6JmZuooOz_pT8gw=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN4KPU4qDgU_cza-hxLAg5bC2Ot6axH5bGZkgpBO9asmr3n4QtV56ortppi-p81yEzx3VygfQvURY_YSDjQgUNx14QkylBgrcpI9eHHo3q7K4FP8tlFyd5fQad6KGBusrNc1XgNJQkyzLFOEkY=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/02-yakima-canyon-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/02-yakima-canyon-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/02-yakima-canyon-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 02 · Aug 1</div>
@@ -704,9 +720,9 @@
     <!-- 03. Lopez Island -->
     <article class="destination">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNdAmerij08jjT47Lk_HEZ2vBSgSe7qS34qo9g5Wa3nd26oxGvLFwRRU_H9Uvr-h5N4pNNmnN8ghhL4E4t3AumPCSmhCOlYrBEZvoWbEnfvf4DQ4y7YflWIxjznLpijTPXGm0ivFXdqM4PQxgs=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMK9ECKqxLJf6qu9zTZoarAwdKZti5juLoM0CdJ8C9K8RC6u-CB4n1srdSPYK1B81iSBGeSqwx30J_2K721E9t3k70lPvpcvG6A9eS-B1QCAqlg--FbvdpmFA4LEhBLcz0rUJubm9UlJ1_dWA=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZM2XCfH1gbFf7jYmUykmnpWx24j739nBOMznHsIf90OzekhYMSYBiXTR24jrZKX9jFjEuVviJDWCSeQ9sV6bCY2nuJfLtu45jAMQJN8PxBsgHBEhqiyFYQpogVSpJJI8VhAB3h0U7aqRMChRg=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/03-lopez-island-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/03-lopez-island-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/03-lopez-island-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 03 · Aug 2–20</div>
@@ -748,9 +764,9 @@
     <!-- 04. Squamish -->
     <article class="destination reverse">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOkM0aPE-8PhkkJd8ep8CzSU4xPZtNO6YDjdG2k_RpP2dcZ1Ef_4OLvEkFBUQVJ16TRJLBrC09Rqng6JKcoTl2nfEaJFVBmXRcQN4vRFKx8P3Nu4GCd1lJMsVNYcGqWRhTbMDMaUYDSS2f0B3g=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMVWHF6n4LC_0c7WlukICnbKRxREFlWFwlkbnuvr65kf_BuYxzabtDtd7VhEGnugPkX0mjZK2jnKz1FrE1_4tmzb7FPD-tjMP1pVTD30t0_cAtQm_kLrlw5ENjwrmAblqiqlP_qoiimXxaD=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMTM-c9ySgjuHUD8vtlHGCcGyYFV8vwBgdrHWZPweswFH6DUPpgPjpGuzWtS-u_9HcE4OV3nxFJSE7WOEmBOAOhSJx6Qh2g9MxnSX9hU4-gthAJMrsiYxid9C1KFkUkKPGNGYGEKynOmEg-ag=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/04-squamish-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/04-squamish-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/04-squamish-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 04 · Aug 21–23</div>
@@ -796,9 +812,9 @@
     <!-- 05. Bonaparte Plateau -->
     <article class="destination">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPcxjRW9yKnwyTfLZETEOoQIdpo7SBkG3U6OaCfURvVWVxzTKVTAWMQwBkmFc0nkdiT_KvazEXT0u_1C9v8fXNKSfXCcFi3gtikoh3FwyKjoli3rSopl0DQ2d2lIE_b4tHHRQgiuMXbzK2Y6lA=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOuAzYjTGtq_0ipLaaY6mRDGIAujxdnH45bou9r_C9O8kNzHJRR5k90d1Qii76Z45rcJmEs7rOSK2g2qEHQS7nGzD9A6Wkz76MvSWQEj_3cxmiuOwWK37HAnBmPcK-5iM9yQF3M0iihGy9Itg=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNAjgQHmZ3ytZ3nrIXkzMrl_Mdk7mp6__73GMHGIl_wWxHLoRS4FziSkhO5A_YvlZrSlFox18gp__HrV8daDNLenAt7MkQEaC9kc5zI6Xu5Rhs2RbCeAZDTiSnng9BEAjgXsAEOxedo4BVhrA=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/05-bonaparte-plateau-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/05-bonaparte-plateau-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/05-bonaparte-plateau-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 05 · Aug 24</div>
@@ -832,9 +848,9 @@
     <!-- 06. Revelstoke -->
     <article class="destination reverse">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN9BUXJJy63VKzH7Wi3oW7OAYBKoIuXv02u2jes9tykm9rh0PhYz-4CRI5QpjEN4f7MFDbxGPpV-H4utPlcyC4ubK1sXEpixI5Jfp0wxTD05yKazO-2Srh6LTgwEP5VNOBbEFXWZuddM9NbWXs=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZO4FuT46yo0Sscnyvo3E1mc4Kiat300qb9AEoR3TRKRInho-uPPX_5VsPni3r1hxFF3dc3OHOAw2N8dLzeIUHNIJObg6dCp6pdnAWtDdY6fBfXVyVjhRU7Z7XEEMJI_KuC2qMipU56UVjmIwg=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNm6aaheM1REukqwMV7JsG2jWbI_D0gY0FljlP6XgfvhCShaorbEJNT-En4ZvXkbPQlmrmJ8j4vOsr0F0cU9ktuB3RdYIkGtuIi6n5nWN_gUID5dFBCY2tQ7USlCj_lcdbxKlcjL9V39yd17Hv3EUZOxw=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/06-revelstoke-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/06-revelstoke-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/06-revelstoke-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 06 · Aug 25–29</div>
@@ -880,9 +896,9 @@
     <!-- 07. Whiteswan Lake -->
     <article class="destination">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPwzFI7H9Du6Gglmhken76P6h5Fv1dDw-a7jryLmRMEriFeJCcOGkkOlz5A2m7xQJZH-QNEhH_p7dCaptOObKcPEeDnXhuhtYeKFIx-FbJI2GngCrXIzmb9nijW6GNReWuYLA_s8euI-kErA1E=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN1Zo_DMq2tNEr7Rkr6_atnyawW6FI8pzROUicC9gIxwGLu9CgaMVEQLIrdIXLtLuVWI8bSBhzCaOCuMnpmiyxYhvzFQHYXEaLqeGE_eIBrWBqCDvBNgP6qENqfUpLMk_BEFD43L-exwydIMw=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOi87HbkVpncQMtERLHO7QgyZ7rPwzckV6Dol3QFLrUEQ1GU9I_qqCTb836_3x5Vi_uDLg992Cq7SAk-QCwxl-_2VG7V9Q_c-5Oi-Airtg0clwmNqMxhj48tsxTaGEQD5hoHB97K9kCy155qA=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/07-whiteswan-lake-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/07-whiteswan-lake-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/07-whiteswan-lake-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 07 · Aug 30–31</div>
@@ -924,9 +940,9 @@
     <!-- 08. Yoho National Park -->
     <article class="destination reverse">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOlGspP0Yb1BoK1leCaF0oI3Bpv5J96SlOThznKnZ6hIRp2HtnlBBxptaDSoY_8kj1_m_i1FJvOSCCxY9qD7p35a7i731Jpq5jSRqUT8y5CoY4gGfGD0g5NVjb2J73W9rLcrDS5Ep5W0-TcDA=s4800-w799-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPiqyygYQr72AXT96ru6CvNFaX733LDng1Zbl5ccDo7Yww-N5UQxY_9VickBLDj3J1Tf8CUa20NqTHcKFUuG50VmiBdzRArYnDMDpMYLjYAzjyorC6b11yHHcguP4ql_U07pUrdok397QyIwDcbSa-H=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMuCozvKZPlWicGWrpF5GvkBxupMyWsJw7TfIMHT5f9vuwglVN6Z3KJXzAjM4T9mLXRqkqkCH7CvSVCXsxCdcOLGT_GQh5L-QYXYmFCgtPQT6mrnQq6hCVmRsOaqtgLWHIBJj5Pj9v0vF22qw=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/08-yoho-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/08-yoho-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/08-yoho-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 08 · Sep 1–3</div>
@@ -972,9 +988,9 @@
     <!-- 09. Fernie -->
     <article class="destination">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZP1veYUQwnsGGmvQy2g3odDuzkz_eJelpwbLTMeVR7oXjUa25SrxDgRdCU7Tlv7I8BIpdr13MB5UQbNotLkITeMDMMv9RKhGsBK5tI6aROLf41-X2xakdcULwQBNIAkXxZbk_SE9A1xP2MmtIw=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOquEnKt5Ix9v1y7vQbok3pIrAQdbYwpYfBpKDxFp2f8Ik7aIka7JkS8mnRMOYzaLizI3jLS3nQs20xzdC3ZVk1Jzg_UDxVpnHTAqrOI2zViXBg43ygkJIWpt-xGoUkDRxXDY84nW_VOJ6pMIw=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNF_dqMehj5_O2NSTeat93gC_ntAKiyf6jMCOiC2mqdV2OSw_6nrRF9TW7OB3qjQCs8cd8wI9ekzaFwfIE0vmUOvwWFknaObn48jdX0sGBFmg-juZqftPgDpLB3N5v_yr_6Y8WdQ15J_f2ThoE=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/09-fernie-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/09-fernie-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/09-fernie-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 09 · Sep 4–6</div>
@@ -1020,9 +1036,9 @@
     <!-- 10. Glacier — east side -->
     <article class="destination reverse">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNEZTI2CJQA_WO6niMOps-ZMXUC9a5DfPB9qz8mBJ_WZ9CT3N4djBXrJRUKxSUkd99gBvYKiz4eOVeNmTkk0FalCmbQPPSJJld0y4vILzuUvs4L-JjZGBwLxG8ZbT-yJENB_yRM9j6S-RlIpyE=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOj1cpj-8ecJCf8nbJ3BJi1lOP3UfO6bLxEcxQ4gj3SrYAmIX71FGeBqQuFrI6atH8Iy1NMGiafD8bjQPcUfdqXmhyhuQc5QEbG6S0Ioz6dIYC57-oS6FKFAoCcDgYhndXJTcnhsIEcqD2y2Vc=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZN60nztBoFtWLekwv-V8BUBCfnTs1wUMyO2WrP3Xpua2XKghtldoFSp8OMzumitA81N39Uu2ONwadLr8weriFu99CoS9TX_lpmzE95ns0PbBd-ybBOvUTlsZbiMHtr7pZTbDYCQ8_3krpHW=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/10-glacier-east-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/10-glacier-east-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/10-glacier-east-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 10 · Sep 7–10</div>
@@ -1068,9 +1084,9 @@
     <!-- 11. Missoula -->
     <article class="destination">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOVTr6wUSrAq5llE0adTDr5p47ZaxyR6UaUeibc3jPC8vMcmuLJStr0ZEjfH7qFwuafp56Z1OSqElDxfdqt3lCSeH4z_cXtnAPyYwCBUBkfwB7iCd6EXeQm8JlcpWRrmssniAVF4BVA9Culaw=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNeyJKgV_yuhHk4oi3-C_uqrBWvR0z7B0kaclq9aJVgGC4vN5tFVgPH0WKxi3ZB7Ltmde-23zf6vx64f171AIqX25_c_l7Y3BcDtPS_6OONjcCbHJB7bpMWOIej8kKn2tB6dSnwQItaYJCS=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZPrgJooSWz53hv71MNhBl30_8670iMrnpPAeREbxbBwT8KBrQrQsDkS4G0t3D9N4c8tPYElv5XBX9hRDsBN6NzC5Hdja-RDXt-67K9-CkJEIegOjk691DmaBDvdCbayguEpfb72WNhX3siCLg=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/11-missoula-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/11-missoula-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/11-missoula-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 11 · Sep 11</div>
@@ -1112,9 +1128,9 @@
     <!-- 12. Teton Valley -->
     <article class="destination reverse">
       <div class="dest-photos">
-        <div class="dest-photo-main" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZMTs2r_S1IaQIHp62WHOqT11Qr5XXyQiyPiahT2YN-YaYhiv0v_wn-aP3lAlvOyzM8Gn5ye7O7wt78xJPj_v1hF2Np7tqT5FKE1oz-YaP7OMQo3vO4akqrpPOp7krOieXisucVv4LWuVgDx=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZOS7WP-pOAE6Eb_GuKIraS4KyKxCXdz_SGSWgAKv3J_-PueKqOP2dR_GvvLSJdIvKn9JOh_64BBIWwuRXchOk0YBIfWXKOlFntIoKFQrbBJ-Uf5zbagMv3yTeBljrC0wjvliTQdED_pZ2OnjcM=s4800-w800-h600')"></div>
-        <div class="dest-photo-side" style="background-image: url('https://lh3.googleusercontent.com/place-photos/AJRVUZNb4VqeUHW0uAKm3Odxn2QTBAaAvemn40f7D_2Uv5likNWhPAWmqwGPP9PqHAofNThJqs7D2ffGR_W704K9WkaDA4v3EPmsYYZtylT_0ItAox4j2DWXKdMu5mCBKUME8S_ION2stb_ya2fTiQ=s4800-w800-h600')"></div>
+        <div class="dest-photo-main" style="background-image: url('photos/12-teton-valley-main.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/12-teton-valley-side1.jpg')"></div>
+        <div class="dest-photo-side" style="background-image: url('photos/12-teton-valley-side2.jpg')"></div>
       </div>
       <div class="dest-content">
         <div class="dest-num">Stop 12 · Sep 12</div>
@@ -1376,6 +1392,114 @@
         <div class="index-total-value">~4</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- 5. PHOTO CREDITS -->
+<section class="colophon">
+  <div class="container">
+    <details class="photo-credits">
+      <summary><span class="credits-eyebrow">Photography</span></summary>
+      <p class="credits-note">Location photos sourced from <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> and used under their respective licenses. Each links to its source.</p>
+      <div class="credits-grid">
+      <div class="credit-stop">
+        <h4>Boise / Arrowrock</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Lucky_peak.jpg" target="_blank" rel="noopener">Lucky peak</a> — Karthikc123, CC BY-SA 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Reverse_side_(reservoir_side)_Arrowrock_Dam_spring_2016.jpg" target="_blank" rel="noopener">Reverse side (reservoir side) Arrowrock Dam spring 2016</a> — Jweinshank, CC BY-SA 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Lucky_Peak_Reservoir_Idaho.JPG" target="_blank" rel="noopener">Lucky Peak Reservoir Idaho</a> — Fredlyfish4, CC BY-SA 3.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Yakima River Canyon</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Yakima_River_Canyon_(26386474994).jpg" target="_blank" rel="noopener">Yakima River Canyon</a> — BLM Oregon &amp; Washington, Public domain</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:View_north_from_Umtanum_Ridge_into_Yakima_Canyon_0960.jpg" target="_blank" rel="noopener">View north from Umtanum Ridge into Yakima Canyon 0960</a> — Williamborg, Public domain</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Umtanum_Recreation_Site_(32417784463).jpg" target="_blank" rel="noopener">Umtanum Recreation Site</a> — Bureau of Land Management Oregon and Washington, Public domain</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Lopez Island</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Iceberg_Point_(32388919114).jpg" target="_blank" rel="noopener">Iceberg Point</a> — Bureau of Land Management Oregon and Washington, Public domain</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Iceberg_Point_Lopez_Island_Washington_USA.jpeg" target="_blank" rel="noopener">Iceberg Point Lopez Island Washington USA</a> — Polymagou, CC BY-SA 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Iceberg_Point_-_panoramio.jpg" target="_blank" rel="noopener">Iceberg Point - panoramio</a> — Kiwibirdman, CC BY 3.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Squamish</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Stawamus_Chief_Provincial_Park,_BC_(DSCF7818).jpg" target="_blank" rel="noopener">Stawamus Chief Provincial Park, BC</a> — Trougnouf, CC BY 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Shannon_Falls_-_Squamish,_British_Columbia_(6300941154).jpg" target="_blank" rel="noopener">Shannon Falls - Squamish, British Columbia</a> — TravelingOtter, CC BY-SA 2.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Squamish_valley.jpg" target="_blank" rel="noopener">Squamish valley</a> — McKay Savage, CC BY 2.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Bonaparte Plateau</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Thompson_Plateau,_near_the_Dominion_Radio_Astrophysical_Observatory.jpg" target="_blank" rel="noopener">Thompson Plateau, near the Dominion Radio Astrophysical Observatory</a> — Extemporalist, CC0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Lac_Le_Jeune.JPG" target="_blank" rel="noopener">Lac Le Jeune</a> — Nurmsook, Public domain</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Sunset,_Lac_Le_Jeune,_Canada.jpg" target="_blank" rel="noopener">Sunset, Lac Le Jeune, Canada</a> — Paul Mannix, CC BY 2.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Revelstoke</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Eva_Lake,_Mount_Revelstoke_National_Park.jpg" target="_blank" rel="noopener">Eva Lake, Mount Revelstoke National Park</a> — Mary Ann Labrie, CC BY-SA 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:MountRevelstoke1.JPG" target="_blank" rel="noopener">MountRevelstoke1</a> — CutOffTies, CC BY-SA 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Path_in_Mount_Revelstoke_National_Park_20240825_2.jpg" target="_blank" rel="noopener">Path in Mount Revelstoke National Park</a> — DXR, CC BY-SA 4.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Whiteswan Lake</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Mount_Dorman_-_Whiteswan_Lake.jpg" target="_blank" rel="noopener">Mount Dorman - Whiteswan Lake</a> — Darren Kirby, CC BY-SA 2.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Lussier_Hot_Springs_-_panoramio.jpg" target="_blank" rel="noopener">Lussier Hot Springs - panoramio</a> — Shane Smith, CC BY-SA 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Topoftheworldprovpark.JPG" target="_blank" rel="noopener">Topoftheworldprovpark</a> — CutOffTies, CC BY-SA 3.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Yoho National Park</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:TakakkawFalls2_edit.jpg" target="_blank" rel="noopener">TakakkawFalls2 edit</a> — Fir0002, CC BY-SA 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Emerald_Lake_-_Yoho_National_Park,_BC,_Canada.jpg" target="_blank" rel="noopener">Emerald Lake - Yoho National Park, BC, Canada</a> — BarbEagen, CC BY-SA 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Lake_O%27Hara_Yoho_National_Park.jpg" target="_blank" rel="noopener">Lake O&#x27;Hara Yoho National Park</a> — Zeljko Kozomara, CC BY-SA 4.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Fernie</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Fernie_mtproctor.jpg" target="_blank" rel="noopener">Fernie mtproctor</a> — NuckGhostriderTPB, CC BY-SA 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Three_sisters_fernie.jpg" target="_blank" rel="noopener">Three sisters fernie</a> — John Johnston, CC BY 2.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:2025-06-04-214507_CAN_British_Columbia_East_Kootenays_(Fernie)_878.2.jpg" target="_blank" rel="noopener">2025-06-04</a> — Hansueli Krapf, CC BY-SA 4.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Glacier (east)</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Grinnell_Glacier_with_Lake_and_Salamander_Glacier.jpg" target="_blank" rel="noopener">Grinnell Glacier with Lake and Salamander Glacier</a> — Alexander Bock, CC BY-SA 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Iceberg_Lake_Trail_-_Glacier_National_Park.jpg" target="_blank" rel="noopener">Iceberg Lake Trail - Glacier National Park</a> — David Taylor, CC BY 2.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Saint_Mary_Lake_GNP1.jpg" target="_blank" rel="noopener">Saint Mary Lake GNP1</a> — Acroterion, CC BY-SA 4.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Missoula</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Missoula_RD_Rattlesnake_Wilderness_(26996619109).jpg" target="_blank" rel="noopener">Missoula RD Rattlesnake Wilderness</a> — Forest Service - Northern Region, Public domain</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Blackfoot_River_and_Clearwater_River_Confluence_near_Clearwater,_Montana.jpg" target="_blank" rel="noopener">Blackfoot River and Clearwater River Confluence near Clearwater, Montana</a> — Bswc blackfootchallenge, CC BY-SA 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Mount_Dean_Stone_veiw_of_Missoula_and_the_Rattlesnake_Wilderness_-_panoramio.jpg" target="_blank" rel="noopener">Mount Dean Stone veiw of Missoula and the Rattlesnake Wilderness - panoramio</a> — nklette, CC BY 3.0</li>
+        </ul>
+      </div>
+      <div class="credit-stop">
+        <h4>Teton Valley</h4>
+        <ul>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Tetons_from_Table_Rock_(horizontal)_(14649343836).jpg" target="_blank" rel="noopener">Tetons from Table Rock (horizontal)</a> — Mike Weston, CC BY 2.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Cascade_canyon_teton_20190713_095729_1.jpg" target="_blank" rel="noopener">Cascade canyon teton</a> — G. Edward Johnson, CC BY 3.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Cascade_creek_teton_20100822_122124_1.jpg" target="_blank" rel="noopener">Cascade creek teton</a> — G. Edward Johnson, CC BY 3.0</li>
+        </ul>
+      </div>
+      </div>
+    </details>
   </div>
 </section>
 
